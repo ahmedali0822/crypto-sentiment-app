@@ -265,11 +265,12 @@ def initialize_reddit():
     """Initialize and verify Reddit API connection"""
     try:
         reddit = praw.Reddit(
-            client_id=st.secrets["REDDIT_CLIENT_ID"],
-            client_secret=st.secrets["REDDIT_CLIENT_SECRET"],
-            user_agent=st.secrets["REDDIT_USER_AGENT"]
+        client_id=st.secrets["REDDIT_CLIENT_ID"],
+        client_secret=st.secrets["REDDIT_CLIENT_SECRET"],
+        user_agent=st.secrets["REDDIT_USER_AGENT"]
         )
         reddit.read_only = True
+
         # Test connection
         if not reddit.user.me():
             raise Exception("Reddit authentication failed")
