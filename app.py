@@ -263,20 +263,25 @@ create_navigation()
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
 def initialize_reddit():
     """Initialize and verify Reddit API connection"""
+    # Initialize Reddit connection
     try:
         reddit = praw.Reddit(
-        client_id=st.secrets["REDDIT_CLIENT_ID"],
-        client_secret=st.secrets["REDDIT_CLIENT_SECRET"],
-        user_agent=st.secrets["REDDIT_USER_AGENT"]
+            client_id=st.secrets["reddit"]["client_id"],
+            client_secret=st.secrets["reddit"]["client_secret"],
+            user_agent=st.secrets["reddit"]["user_agent"]
         )
-        reddit.read_only = True
-
+        
+        # DEBUG CODE HERE (right after initialization)
+        st.write("Secrets loaded:", {
+            "client_id": st.secrets["reddit"]["client_id"],
+            "user_agent": repr(st.secrets["reddit"]["user_agent"])  # Shows hidden chars
+        })
+        
         # Test connection
-        if not reddit.user.me():
-            raise Exception("Reddit authentication failed")
-        return reddit
+        st.write("Reddit API user:", reddit.user.me())
+        
     except Exception as e:
-        st.error(f"🔴 Reddit API Error: {str(e)}")
+        st.error(f"🔴 Reddit connection failed: {str(e)}")
         st.stop()
 
 reddit = initialize_reddit()
