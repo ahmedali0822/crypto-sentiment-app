@@ -264,25 +264,26 @@ create_navigation()
 def initialize_reddit():
     """Initialize and verify Reddit API connection"""
     # Initialize Reddit connection
+# Initialize Reddit connection
     try:
         reddit = praw.Reddit(
-            client_id=st.secrets["reddit"]["client_id"],
+            client_id=st.secrets["reddit"]["client_id"],  # Note: lowercase "reddit" to match your TOML
             client_secret=st.secrets["reddit"]["client_secret"],
-            user_agent=st.secrets["reddit"]["user_agent"]
+            user_agent=st.secrets["reddit"]["user_agent"],
+            read_only=True  # Added as parameter instead of separate line
         )
         
-        # DEBUG CODE HERE (right after initialization)
-        st.write("Secrets loaded:", {
-            "client_id": st.secrets["reddit"]["client_id"],
-            "user_agent": repr(st.secrets["reddit"]["user_agent"])  # Shows hidden chars
-        })
-        
-        # Test connection
-        st.write("Reddit API user:", reddit.user.me())
-        
+        # Silent test - only shows error if failed
+        if not reddit.user.me():
+            raise Exception("Reddit authentication failed")
+            
     except Exception as e:
-        st.error(f"🔴 Reddit connection failed: {str(e)}")
-        st.stop()
+        st.error(f"""
+        🔴 Reddit API Error: {str(e)}
+        * Check [Reddit API Status](https://www.redditstatus.com)
+        * Verify secrets in Streamlit Cloud
+        """)
+        st.stop()  # Prevent app from running without auth
 
 reddit = initialize_reddit()
 
