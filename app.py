@@ -272,6 +272,12 @@ def initialize_reddit():
             user_agent=st.secrets["reddit"]["user_agent"],
             read_only=True  # Added as parameter instead of separate line
         )
+        # Right after praw.Reddit() initialization
+        st.write("🔍 Debug Info:", {
+            "Client ID": st.secrets["reddit"]["client_id"][:3] + "...",
+            "User Agent": repr(st.secrets["reddit"]["user_agent"]),
+            "API Limits": str(reddit.auth.limits) if 'reddit' in locals() else "Not connected"
+        })
         
         # Silent test - only shows error if failed
         if not reddit.user.me():
